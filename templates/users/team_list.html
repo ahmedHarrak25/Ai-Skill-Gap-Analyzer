@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Team List</title>
+    <!-- Link to Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        /* General Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* The main white box (card) */
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Header section with title and breadcrumb */
+        .card-header {
+            margin-bottom: 20px;
+        }
+        .card-header .title {
+            margin: 0;
+            font-size: 24px;
+        }
+        .card-header .breadcrumb {
+            font-size: 14px;
+            color: #555;
+        }
+        .card-header .breadcrumb a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        /* The bar with Search and Add User button */
+        .action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        /* Search input style */
+        .search-bar input {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 14px;
+            width: 250px;
+        }
+
+        /* Blue "Add User" button style */
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        /* Table styling */
+        .team-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .team-table th, .team-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #f0f2f5;
+            vertical-align: middle;
+        }
+        .team-table th {
+            font-size: 14px;
+            color: #555;
+        }
+        .team-table td {
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* "Full Time" status pill */
+        .status-pill {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            background-color: #e6f7f0; /* Light green */
+            color: #0d8c55; /* Dark green */
+        }
+        
+        /* Edit and Delete icon buttons */
+        .icon-btn {
+            color: #888;
+            margin: 0 5px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <!-- HEADER SECTION -->
+        <div class="card-header">
+            <h1 class="title">Team List</h1>
+            <p class="breadcrumb"><a href="#">Admin Dashboard</a> > Team List</p>
+        </div>
+
+        <!-- ACTION BAR SECTION -->
+        <div class="action-bar">
+            <div class="search-bar">
+                <input type="text" placeholder="Search Task">
+            </div>
+            <a href="#" class="btn-primary">+ ADD USER</a>
+        </div>
+
+        <!-- TABLE SECTION -->
+        <table class="team-table">
+            <thead>
+                <tr>
+                    <th><input type="checkbox"></th>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Department</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Status</th>
+                    <th>Edit</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Django loops through your users here -->
+                {% for member in team_members %}
+                <tr>
+                    <td><input type="checkbox"></td>
+                    <td>{{ member.first_name }} {{ member.last_name }}</td>
+                    <td>{{ member.position }}</td>
+                    <td>{{ member.department }}</td>
+                    <td>{{ member.email }}</td>
+                    <td>{{ member.phone }}</td>
+                    <td>
+                        <span class="status-pill">{{ member.status }}</span>
+                    </td>
+                    <td>
+                        <!-- These are the Font Awesome icons -->
+                        <a href="#" class="icon-btn"><i class="fas fa-pencil-alt"></i></a>
+                        <a href="#" class="icon-btn"><i class="fas fa-trash-alt"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
