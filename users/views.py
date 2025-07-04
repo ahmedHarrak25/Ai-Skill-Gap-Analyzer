@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .models import CustomUser
 def team_list_view(request):
 
-    team_members = CustomUser.objects.all()
+    team_members = CustomUser.objects.filter(is_superuser=False)
     context = {
         'team_members': team_members
     }
