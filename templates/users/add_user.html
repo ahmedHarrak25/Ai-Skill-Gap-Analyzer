@@ -1,0 +1,126 @@
+<!-- templates/users/add_user.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add New User</title>
+    <style>
+        /* Basic styling for a clean form */
+        body { font-family: Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .card { background-color: white; border-radius: 12px; padding: 24px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); max-width: 800px; margin: auto; }
+        .title { margin: 0 0 24px 0; font-size: 24px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { margin-bottom: 8px; font-weight: bold; font-size: 14px; }
+        .form-group input, .form-group select { padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        .form-actions { margin-top: 24px; text-align: right; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; text-decoration: none; }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-secondary { background-color: #6c757d; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1 class="title">Add New User</h1>
+        
+        <!-- The form starts here -->
+        <form action="{% url 'users:add_user' %}" method="post" novalidate>
+            <!-- VERY IMPORTANT: Django security token -->
+            {% csrf_token %}
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="first_name">First Name</label>
+                    <input type="text" id="first_name" name="first_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="last_name">Last Name</label>
+                    <input type="text" id="last_name" name="last_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="text" id="phone" name="phone">
+                </div>
+                 <div class="form-group">
+                    <label for="position">Position</label>
+                    <input type="text" id="position" name="position">
+                </div>
+                <div class="form-group">
+                    <label for="department">Department</label>
+                    <input type="text" id="department" name="department">
+                </div>
+                <div class="form-group">
+                    <label for="role">Role</label>
+                    <select id="role" name="role">
+                        <option value="employee">Employee</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="{% url 'users:team_list' %}" class="btn btn-secondary">Cancel</a>
+                <button type="button" id="submitBtn" class="btn btn-primary">Add User</button>
+            </div>
+        </form>
+    </div>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+    <!-- STEP 2: YOUR CUSTOM SCRIPT (MUST BE SECOND) -->
+    <script>
+        $(document).ready(function() {
+            // Give the form an ID
+            $('form').attr('id', 'addUserForm');
+
+            // Listen for a CLICK on our new button ID
+            $('#submitBtn').on('click', function() {
+                
+                // --- VALIDATION ---
+                let isValid = true;
+                let requiredFields = ['#first_name', '#last_name', '#email', '#password'];
+                
+                requiredFields.forEach(function(field) {
+                    if ($(field).val().trim() === '') {
+                        isValid = false;
+                    }
+                });
+
+                if (!isValid) {
+                    alert('Please fill out all required fields (First Name, Last Name, Email, Password).');
+                    return; // Stop the function
+                }
+                
+                // If validation passes, send the data via AJAX
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'users:add_user' %}",
+                    data: $('#addUserForm').serialize(), 
+                    beforeSend: function(xhr) {
+                        xhr.setRequestHeader("X-CSRFToken", "{{ csrf_token }}");
+                    },
+                    success: function(response) {
+                        alert(response.message);
+                        window.location.href = "{% url 'users:team_list' %}";
+                    },
+                    error: function(response) {
+                        let errorMessage = "An unknown error occurred.";
+                        if (response.responseJSON && response.responseJSON.message) {
+                            errorMessage = response.responseJSON.message;
+                        }
+                        alert('Error: ' + errorMessage);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
