@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Job Management Dashboard</title>
+    <!-- Link to Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        /* Reusing similar styles from our previous dashboard for consistency */
+        body { font-family: Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: auto; }
+        .card { background-color: white; border-radius: 12px; padding: 24px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .title { margin: 0 0 24px 0; font-size: 24px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: bold; font-size: 14px; }
+        .form-group input, .form-group textarea { width: 95%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        .btn-primary { background-color: #007bff; color: white; }
+        .job-table { width: 100%; border-collapse: collapse; }
+        .job-table th, .job-table td { padding: 15px; text-align: left; border-bottom: 1px solid #f0f2f5; }
+        .job-table th { font-size: 14px; color: #555; }
+        .icon-btn { color: #888; margin: 0 5px; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Form for Adding a New Job -->
+    <div class="card">
+        <h1 class="title">Add New Job</h1>
+        <form id="addJobForm">
+            <div class="form-group">
+                <label for="job_title">Job Title</label>
+                <input type="text" id="job_title" name="job_title" required>
+            </div>
+            <div class="form-group">
+                <label for="job_description">Job Description</label>
+                <textarea id="job_description" name="job_description" rows="4" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Job</button>
+        </form>
+    </div>
+
+    <!-- Table for Displaying Existing Jobs -->
+    <div class="card">
+        <h1 class="title">Job List</h1>
+        <table class="job-table">
+            <thead>
+                <tr>
+                    <th>Job Title</th>
+                    <th>Job Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <!-- The table body will be filled by jQuery -->
+            <tbody id="job-list-body">
+                <!-- Example Row (we will generate this with JS)
+                <tr>
+                    <td>Senior Developer</td>
+                    <td>Responsible for building amazing things.</td>
+                    <td>
+                        <a href="#" class="icon-btn"><i class="fas fa-pencil-alt"></i></a>
+                        <a href="#" class="icon-btn"><i class="fas fa-trash-alt"></i></a>
+                    </td>
+                </tr>
+                -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Load jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<!-- Our Custom Script -->
+<script>
+    // All our jQuery code will go here in the next steps
+    $(document).ready(function() {
+    
+    // --- FUNCTION TO FETCH AND DISPLAY JOBS (READ) ---
+    function fetchJobs() {
+        $.ajax({
+            url: '/api/jobs/', // The URL of your jobs API endpoint
+            type: 'GET',
+            success: function(jobs) {
+                let tableBody = $('#job-list-body');
+                tableBody.empty(); // Clear the table before adding new rows
+
+                jobs.forEach(function(job) {
+                    // Create a new table row for each job
+                    let row = `<tr>
+                                 <td>${job.job_title}</td>
+                                 <td>${job.job_description}</td>
+                                 <td>
+                                     <a href="#" class="icon-btn edit-btn" data-id="${job.id}"><i class="fas fa-pencil-alt"></i></a>
+                                     <a href="#" class="icon-btn delete-btn" data-id="${job.id}"><i class="fas fa-trash-alt"></i></a>
+                                 </td>
+                               </tr>`;
+                    tableBody.append(row); // Add the new row to the table
+                });
+            },
+            error: function(error) {
+                console.error("Error fetching jobs:", error);
+            }
+        });
+    }
+
+    // --- INITIAL PAGE LOAD ---
+    // Fetch the jobs as soon as the page is ready
+    fetchJobs();
+
+});
+</script>
+
+</body>
+</html>
