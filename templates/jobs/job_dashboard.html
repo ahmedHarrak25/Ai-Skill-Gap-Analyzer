@@ -30,6 +30,7 @@
     <div class="card">
         <h1 class="title">Add New Job</h1>
         <form id="addJobForm">
+            <input type="hidden" id="job_id" name="job_id">
             <div class="form-group">
                 <label for="job_title">Job Title</label>
                 <input type="text" id="job_title" name="job_title" required>
@@ -70,25 +71,25 @@
     </div>
 </div>
 
-<!-- Load jQuery -->
+
+<!-- Load jQuery (should already be there) -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
 <!-- Our Custom Script -->
 <script>
-    // All our jQuery code will go here in the next steps
-    $(document).ready(function() {
+// --- COMPLETE SCRIPT ---
+$(document).ready(function() {
     
-    // --- FUNCTION TO FETCH AND DISPLAY JOBS (READ) ---
+    // --- 1. FUNCTION TO FETCH AND DISPLAY JOBS (READ) ---
     function fetchJobs() {
         $.ajax({
-            url: '/api/jobs/', // The URL of your jobs API endpoint
+            url: '/api/jobs/',
             type: 'GET',
             success: function(jobs) {
                 let tableBody = $('#job-list-body');
-                tableBody.empty(); // Clear the table before adding new rows
-
+                tableBody.empty();
                 jobs.forEach(function(job) {
-                    // Create a new table row for each job
-                    let row = `<tr>
+                    let row = `<tr id="job-row-${job.id}">
                                  <td>${job.job_title}</td>
                                  <td>${job.job_description}</td>
                                  <td>
@@ -96,17 +97,93 @@
                                      <a href="#" class="icon-btn delete-btn" data-id="${job.id}"><i class="fas fa-trash-alt"></i></a>
                                  </td>
                                </tr>`;
-                    tableBody.append(row); // Add the new row to the table
+                    tableBody.append(row);
                 });
-            },
-            error: function(error) {
-                console.error("Error fetching jobs:", error);
             }
         });
     }
 
+    // --- 2. HANDLE FORM SUBMISSION (CREATE & UPDATE) ---
+    $('#addJobForm').on('submit', function(event) {
+        event.preventDefault();
+        let jobId = $('#job_id').val();
+        let requestType = jobId ? 'PUT' : 'POST';
+        let requestUrl = jobId ? `/api/jobs/${jobId}/` : '/api/jobs/';
+
+        $.ajax({
+            url: requestUrl,
+            type: requestType,
+            data: $(this).serialize(),
+            beforeSend: function(xhr) {
+                xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+            },
+            success: function(response) {
+                let message = jobId ? 'Job updated successfully!' : 'Job added successfully!';
+                alert(message);
+                fetchJobs();
+                $('#addJobForm')[0].reset();
+                $('#job_id').val('');
+                $('#addJobForm button[type="submit"]').text('Add Job').removeClass('btn-update');
+            },
+            error: function(error) {
+                alert('Failed to save job.');
+                console.error("Error saving job:", error);
+            }
+        });
+    });
+
+    // --- 3. HANDLE DELETE JOB BUTTON CLICK (DELETE) ---
+    $('#job-list-body').on('click', '.delete-btn', function(event) {
+        event.preventDefault();
+        if (confirm('Are you sure you want to delete this job?')) {
+            let jobId = $(this).data('id');
+            $.ajax({
+                url: `/api/jobs/${jobId}/`,
+                type: 'DELETE',
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+                },
+                success: function(response) {
+                    fetchJobs();
+                }
+            });
+        }
+    });
+
+    // --- 4. HANDLE EDIT JOB BUTTON CLICK (Populate Form) ---
+    $('#job-list-body').on('click', '.edit-btn', function(event) {
+        event.preventDefault();
+        let jobId = $(this).data('id');
+        $.ajax({
+            url: `/api/jobs/${jobId}/`,
+            type: 'GET',
+            success: function(job) {
+                $('#job_id').val(job.id);
+                $('#job_title').val(job.job_title);
+                $('#job_description').val(job.job_description);
+                $('#addJobForm button[type="submit"]').text('Save Changes');
+                window.scrollTo(0, 0);
+            }
+        });
+    });
+
+    // --- HELPER FUNCTION TO GET CSRF TOKEN ---
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
     // --- INITIAL PAGE LOAD ---
-    // Fetch the jobs as soon as the page is ready
     fetchJobs();
 
 });
