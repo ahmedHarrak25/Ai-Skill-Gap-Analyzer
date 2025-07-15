@@ -16,7 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+# Import the new preview view
+from .views import sidebar_preview_view
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    
+    # ADD THIS TEMPORARY PREVIEW URL
+    path('sidebar-preview/', sidebar_preview_view, name='sidebar_preview'),
 ]

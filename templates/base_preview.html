@@ -1,0 +1,121 @@
+<!-- templates/base_preview.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sidebar Preview</title>
+    <!-- We need Font Awesome for the icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <style>
+        /* Basic page setup */
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f4f6f8;
+        }
+
+        /* Main container to hold sidebar and content side-by-side */
+        .app-container {
+            display: flex;
+        }
+
+        /* The Sidebar itself */
+        .sidebar {
+            width: 90px;
+            height: 100vh;
+            background-color: #ffffff;
+            padding-top: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 0 15px rgba(0,0,0,0.07);
+        }
+
+        /* Logo at the top */
+        .sidebar-logo {
+            font-size: 32px;
+            color: #0d6efd;
+            margin-bottom: 30px;
+        }
+
+        /* Styling for each navigation link */
+        .nav-link {
+            font-size: 20px;
+            color: #8a99b5;
+            text-decoration: none;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 12px;
+            width: 50px;
+            text-align: center;
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+
+        /* Style for the ACTIVE link or when hovering */
+        .nav-link.active,
+        .nav-link:hover {
+            background-color: #0d6efd;
+            color: #ffffff;
+        }
+
+        /* The area for the rest of the page content */
+        .main-content {
+            flex-grow: 1;
+            padding: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- ==== SIDEBAR START ==== -->
+        <nav class="sidebar">
+            <div class="sidebar-logo">
+                <!-- This icon is a very close match to the design's logo -->
+                <i class="fas fa-shield-halved"></i>
+            </div>
+            
+            <!-- These are the exact icons from your screenshot -->
+            <a href="#" class="nav-link" title="Dashboard"><i class="fas fa-th-large"></i></a>
+            <a href="#" class="nav-link" title="Projects"><i class="fas fa-layer-group"></i></a>
+            <a href="#" class="nav-link active" title="Users"><i class="fas fa-users"></i></a>
+            <a href="#" class="nav-link" title="Files"><i class="fas fa-file-alt"></i></a>
+            <a href="#" class="nav-link" title="Folder"><i class="fas fa-folder"></i></a>
+            <a href="#" class="nav-link" title="Tasks"><i class="fas fa-clipboard-list"></i></a>
+            <a href="#" class="nav-link" title="Calendar"><i class="fas fa-calendar-alt"></i></a>
+        </nav>
+        <!-- ==== SIDEBAR END ==== -->
+
+        <!-- ==== MAIN CONTENT START ==== -->
+        <main class="main-content">
+            <h1>Page Content Goes Here</h1>
+            <p>Click on the sidebar icons to see the active state change.</p>
+        </main>
+        <!-- ==== MAIN CONTENT END ==== -->
+    </div>
+
+    <!-- We need jQuery to handle the clicking interaction -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Find all the navigation links
+            const navLinks = $('.nav-link');
+
+            // Add a click handler to each link
+            navLinks.on('click', function(event) {
+                // Prevent the link from trying to navigate away (since href is #)
+                event.preventDefault();
+
+                // First, remove the 'active' class from all links
+                navLinks.removeClass('active');
+
+                // Then, add the 'active' class to the one that was just clicked
+                $(this).addClass('active');
+            });
+        });
+    </script>
+
+</body>
+</html>
